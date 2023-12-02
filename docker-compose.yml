@@ -1,0 +1,33 @@
+version: '3.8'
+services:
+  app:
+    build: .
+    ports:
+      - '3002:3002'
+    depends_on:
+      - db
+    environment:
+      - DB_HOST=db
+      - DB_USER=root
+      - DB_PASSWORD=mi_contraseña
+      - DB_NAME=mi_base_de_datos
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    command: npm run dev
+
+  db:
+    image: mysql:5.7
+    volumes:
+      - db_data:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=mi_contraseña
+      - MYSQL_DATABASE=mi_base_de_datos
+    ports:
+      - '3306:3306'
+
+volumes:
+  db_data:
+
+
+
