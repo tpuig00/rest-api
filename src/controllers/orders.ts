@@ -6,10 +6,13 @@ class OrderController {
     async createOrder(req: Request, res: Response) {
         try {
             const orderData = req.body;
-            await OrderService.processNewOrder(orderData);
-            res.status(201).json('HOLIIII');
-        } catch (error) {
-            res.status(400).json({ error: 'FAILLL' });
+            console.info('entra al controller')
+            let result = await OrderService.processNewOrder(orderData);
+            if (result) {
+                res.status(201).json({ id: result });
+            }
+        } catch (error: any) {
+            res.status(400).json({ error: error.message });
         }
     }
 }

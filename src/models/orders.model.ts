@@ -38,22 +38,27 @@ export class OrdersModel {
     }
 
     // Create a new order
-    public async create(order: Orders): Promise<number> {
+    public async create(order: Orders): Promise<number> {   
         const connection = await getConnection();
-        console.info('entra a create Order')
-        const [result] = await connection.query('INSERT INTO Orders SET ?', [order]);
-        connection.release();
-        if ('affectedRows' in result) {
-            if(result.affectedRows > 0){
-                return order.id;
-            }
-        } else {
-            throw new Error('No se pudo obtener el insertId del resultado de la inserción.');
-        }
-        throw new Error('No se pudo crear la orden.'); // Added return statement
-    }
+        try {
+            console.info('Entry at create order');
+            const [result] = await connection.query('INSERT INTO Orders SET ?', [order]);
 
-    getNeededColumns(): Array<string> {
+            if (result && 'affectedRows' in result && result.affectedRows > 0){
+                return order.id;
+            } else {
+                throw new Error('No se pudo crear la orden debido a un error en la base de datos.');
+            }
+        } catch (error) {
+            throw new Error(`Error al crear la orden: ${(error as Error).message}`);
+        } finally {
+            if (connection) {
+                connection.release();
+            }
+        }
+    }
+    
+    public static getNeededColumns(): Array<string> {
         return ['id','id_tienda', 'id_customer', 'nuevo', 'email', 'tlf', 'shipping_address_index', 'total'];
     }
 
